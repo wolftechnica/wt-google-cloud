@@ -19,8 +19,8 @@ import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage.BlobGetOption;
 import com.google.cloud.storage.StorageOptions;
 import com.wolftechnica.google.constants.GoogleConstant;
-import com.wolftechnica.google.exceptions.WtStorageException;
-import com.wolftechnica.google.exceptions.WtStorageExceptionCodes;
+import com.wolftechnica.google.exceptions.WtCloudException;
+import com.wolftechnica.google.exceptions.WtCloudExceptionCodes;
 import com.wolftechnica.google.helpers.PropertyFileHelper;
 
 /**
@@ -35,9 +35,9 @@ public class GCSCoreService {
 	private static com.google.cloud.storage.Storage storage;
 	private static GCSCoreService clouldStorageCoreService;
 
-	private GCSCoreService() throws IllegalAccessException {
+	private GCSCoreService() throws WtCloudException {
 		if(clouldStorageCoreService != null ) {
-			throw new IllegalAccessException("GoogleClouldStorageCoreService is singletion class");
+			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_SINGLETON_CLASS_ACCESS_EXCEPTION);
 		}
 		
 	}
@@ -45,9 +45,9 @@ public class GCSCoreService {
 	/**
 	 * Method getGCSCoreService is provide the singleton object of core service class.
 	 * @return GCSCoreService
-	 * @throws IllegalAccessException if no property file found
+	 * @throws WtCloudException if no property file found 
 	 */
-	public static GCSCoreService getGCSCoreService() throws IllegalAccessException {
+	public static GCSCoreService getGCSCoreService() throws  WtCloudException {
 		if (clouldStorageCoreService == null) {
 			clouldStorageCoreService = new GCSCoreService();
 			try {
@@ -66,7 +66,7 @@ public class GCSCoreService {
 	 * @return Singleton instance of GCSCoreService
 	 * @throws IllegalAccessException if no key passed
 	 */
-	public static GCSCoreService getGCSCoreService(String apiKey, String projectId) throws IllegalAccessException {
+	public static GCSCoreService getGCSCoreService(String apiKey, String projectId) throws WtCloudException {
 		if (clouldStorageCoreService == null) {
 			clouldStorageCoreService = new GCSCoreService();
 			try {
@@ -162,13 +162,13 @@ public class GCSCoreService {
 	/**
 	 * @param bucketName : name of the bucket where we need to add file
 	 * @return returns blob page
-	 * @throws WtStorageException : exception while retrieving object from storage
+	 * @throws WtCloudException : exception while retrieving object from storage
 	 */
-	public Page<Blob> getObjectsFromBucket(String bucketName) throws WtStorageException {
+	public Page<Blob> getObjectsFromBucket(String bucketName) throws WtCloudException {
 		Bucket bucket = getBucket(bucketName);
 		if (bucket == null) {
 			LOG.log(Level.WARNING, "No bucket exist : ", bucketName);
-			throw new WtStorageException(WtStorageExceptionCodes.NO_BUCKET_FOUND);
+			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_NO_BUCKET_FOUND);
 		}
 		return bucket.list();
 	}
@@ -178,16 +178,16 @@ public class GCSCoreService {
 	 * @param blobName blobName
 	 * @param generation generation name
 	 * @return Blob : returns google blob object
-	 * @throws WtStorageException exception while retrieving data from google storage
+	 * @throws WtCloudException exception while retrieving data from google storage
 	 */
-	public Blob getObjectFromBucket(String bucketName, String blobName, long generation) throws WtStorageException {
+	public Blob getObjectFromBucket(String bucketName, String blobName, long generation) throws WtCloudException {
 		LOG.log(Level.INFO, "params : {0}  ", Arrays.asList(blobName, generation));
 		Blob blob = null;
 		try {
 			blob = getBucket(bucketName).get(blobName, BlobGetOption.generationMatch(generation));
 			if (blob == null) {
 				LOG.log(Level.WARNING, "No bucket exist : ", bucketName);
-				throw new WtStorageException(WtStorageExceptionCodes.NO_BUCKET_OBJECT_FOUND);
+				throw new WtCloudException(WtCloudExceptionCodes.STORAGE_NO_BUCKET_FOUND);
 			}
 		} catch (Exception e) {
 			LOG.severe(e.getMessage());

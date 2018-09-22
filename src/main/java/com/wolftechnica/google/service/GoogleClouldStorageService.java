@@ -12,8 +12,8 @@ import com.wolftechnica.google.constants.GoogleConstant;
 import com.wolftechnica.google.constants.MediaType;
 import com.wolftechnica.google.dto.WtBlob;
 import com.wolftechnica.google.dto.WtBlobId;
-import com.wolftechnica.google.exceptions.WtStorageException;
-import com.wolftechnica.google.exceptions.WtStorageExceptionCodes;
+import com.wolftechnica.google.exceptions.WtCloudException;
+import com.wolftechnica.google.exceptions.WtCloudExceptionCodes;
 import com.wolftechnica.google.helpers.DtoMapper;
 import com.wolftechnica.google.helpers.PropertyFileHelper;
 import com.wolftechnica.google.helpers.WtHelper;
@@ -23,7 +23,7 @@ import com.wolftechnica.google.service.core.GCSCoreService;
  * GoogleClouldStorageService provides the various method for 
  * easy implementation of google storage service  
  * 
- * @author Wolftechnica services
+ * @author Wolftechnica
  * @version 1.0
  */
 public class GoogleClouldStorageService {
@@ -48,7 +48,7 @@ public class GoogleClouldStorageService {
 			LOG.info("initializing GCSCoreService...");
 			clouldStorageCoreService = GCSCoreService.getGCSCoreService();
 			LOG.info("GCSCoreService initialized");
-		} catch (IllegalAccessException e) {
+		} catch (WtCloudException e) {
 			LOG.severe(e.getLocalizedMessage());
 		}
 	}
@@ -61,11 +61,11 @@ public class GoogleClouldStorageService {
 	 * @param projectId : name of the project ID
 	 * 
 	 * @throws IllegalAccessException : exception while retrieving object from storage
-	 * @throws WtStorageException  : exception while retrieving object from storage
+	 * @throws WtCloudException  : exception while retrieving object from storage
 	 */
-	public GoogleClouldStorageService(String apiKey, String projectId, String bucketName) throws IllegalAccessException, WtStorageException {
+	public GoogleClouldStorageService(String apiKey, String projectId, String bucketName) throws WtCloudException {
 		if(apiKey == null || projectId == null ||bucketName == null) {
-			throw new WtStorageException(WtStorageExceptionCodes.MANDATORY_ARGUMENTS_NOT_FOUND);
+			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_MANDATORY_ARGUMENTS_NOT_FOUND);
 		}
 		this.clouldStorageCoreService = GCSCoreService.getGCSCoreService(apiKey, projectId);
 		this.bucketName = bucketName;
@@ -78,11 +78,11 @@ public class GoogleClouldStorageService {
 	 * The method uploadProfilePic  is to upload profile pic.
 	 * @param file is the file to upload
 	 * @param fileName is the name of the file 
-	 * @throws WtStorageException : exception while retrieving object from storage 
+	 * @throws WtCloudException : exception while retrieving object from storage 
 	 */
-	public void uploadProfilePic(byte[] file, String fileName) throws WtStorageException {
+	public void uploadProfilePic(byte[] file, String fileName) throws WtCloudException {
 		if(file == null || fileName == null ) {
-			throw new WtStorageException(WtStorageExceptionCodes.MANDATORY_ARGUMENTS_NOT_FOUND);
+			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_MANDATORY_ARGUMENTS_NOT_FOUND);
 		}
 		String prefix = PropertyFileHelper.getProperty(GoogleConstant.CONFIG_GC_FOLDER_PROFILE)
 				+ System.currentTimeMillis();
@@ -96,12 +96,12 @@ public class GoogleClouldStorageService {
 	 * @param mediatype : supported media types AUDIO, VIDEO, DOCUMENTS, PICTURES
 	 * @param fileName : file name is optional when it will be provided it will append to the timestamp 
 	 * otherwise random generated string is concatenated with timestamp.
-	 * @throws WtStorageException : exception while retrieving object from storage 
+	 * @throws WtCloudException : exception while retrieving object from storage 
 	 *
 	 */
-	public void uploadUserMedia(byte[] file,MediaType mediatype, String fileName) throws WtStorageException {
-		if(file == null || fileName == null || mediatype == null) {
-			throw new WtStorageException(WtStorageExceptionCodes.MANDATORY_ARGUMENTS_NOT_FOUND);
+	public void uploadUserMedia(byte[] file,MediaType mediatype, String fileName) throws WtCloudException {
+		if(file == null ||  mediatype == null) {
+			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_MANDATORY_ARGUMENTS_NOT_FOUND);
 		}
 		clouldStorageCoreService.addFileToBucket(file, bucketName,
 				getRootFolder(mediatype) + System.currentTimeMillis() + ((fileName == null) ? WtHelper.generateRandomString(7) : fileName));
@@ -109,19 +109,19 @@ public class GoogleClouldStorageService {
  
 
 	/**
-	 * Method addFileToBucket : is used for uploading file to the storage
+	 * Method addFileInBucket : is used for uploading file to the storage
 	 * 
 	 * @param file - file to be upload. This will auto generate a unique file name.
 	 * @param fileExtension - various file extension is supported from {@link FileExtenion} enum.
 	 *            like FileExtenion.IMG_JPEG, FileExtenion.IMG_GIF ..etc
 	 * @return WtBlobId : generated info for uploaded file. Same can be used to retrieve stored file.
-	 * @throws WtStorageException : exception while retrieving object from storage
+	 * @throws WtCloudException : exception while retrieving object from storage
 	 */
-	public WtBlobId addFileToBucket(byte[] file, FileExtenion fileExtension) throws WtStorageException {
+	public WtBlobId uploadFileInBucket(byte[] file, FileExtenion fileExtension) throws WtCloudException {
 		if(file == null || fileExtension == null ) {
-			throw new WtStorageException(WtStorageExceptionCodes.MANDATORY_ARGUMENTS_NOT_FOUND);
+			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_MANDATORY_ARGUMENTS_NOT_FOUND);
 		}
-		return addFileToBucket(bucketName, file, fileExtension, null);
+		return uploadFileInBucket( file, fileExtension, null, bucketName);
 	}
 	
 	/**
@@ -132,14 +132,14 @@ public class GoogleClouldStorageService {
 	 * @param fileName - file name is optional, if it is provided this method will append current time to the filename
 	 * 	fileName must not contain personal information
 	 * @return WtBlobId : generated info for uploaded file, this can be used to retrieve the file using wt-util or google storage api
-	 * @throws WtStorageException : exception while retrieving object from storage
+	 * @throws WtCloudException : exception while retrieving object from storage
 	 */
-	public WtBlobId addFileToBucket(byte[] file, FileExtenion fileExtension, String fileName) throws WtStorageException {
-		return addFileToBucket(bucketName, file, fileExtension, fileName);
+	public WtBlobId uploadFileInBucket(byte[] file, FileExtenion fileExtension, String fileName) throws WtCloudException {
+		return uploadFileInBucket( file, fileExtension, fileName, bucketName);
 	}
 
 	/**
-	 * This Overloaded form of addFileToBucket method it for specify the bucket name to which we are going to add file
+	 * This Overloaded form of addFileInBucket method it for specify the bucket name to which we are going to add file
 	 * 
 	 * @param file : file to be upload 
 	 * @param bucketName : specify the name of the bucket where one need to store uploaded file 
@@ -147,12 +147,12 @@ public class GoogleClouldStorageService {
 	 *            like FileExtenion.IMG_JPEG, FileExtenion.IMG_GIF ..etc
 	 * @param fileName : file name must be consist with 
 	 * @return WTBlobId : generated info for uploaded file.
-	 * @throws WtStorageException : exception while retrieving object from storage 
+	 * @throws WtCloudException : exception while retrieving object from storage 
 	 */
-	public WtBlobId addFileToBucket(String bucketName, byte[] file, FileExtenion fileExtension, String fileName)
-			throws WtStorageException {
+	public WtBlobId uploadFileInBucket(byte[] file, FileExtenion fileExtension, String fileName, String bucketName)
+			throws WtCloudException {
 		if (file == null || fileExtension == null) {
-			throw new WtStorageException(WtStorageExceptionCodes.MANDATORY_ARGUMENTS_NOT_FOUND);
+			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_MANDATORY_ARGUMENTS_NOT_FOUND);
 		}
 		fileName = (fileName == null) ? WtHelper.generateRandomString(7) : fileName;
 		fileName = fileName.concat("." + fileExtension.getExtension());
@@ -171,9 +171,28 @@ public class GoogleClouldStorageService {
 	 * @param file : file to be upload 
 	 * @param bucketName : specify the name of the bucket where one need to store uploaded file
 	 * @param fileName : file name must be consist with
-	 * @param subDirectory : sub directory of parent bucket
+	 * @param subDirectory : sub directory of parent bucket 
+	 * @throws WtCloudException 
 	 */
-	public void uploadFileInFolder(byte[] file, String bucketName, String fileName, String subDirectory) {
+	public void uploadFileInFolder(byte[] file, FileExtenion fileExtenion, String subDirectory) throws WtCloudException {
+		clouldStorageCoreService.addFileToBucket(file, bucketName, subDirectory, null);
+	}
+	
+	/**
+	 * uploadFileInFolder :  This Method can used for uploading file in specified directory, 
+	 * 		example, suppose one need to add a file in the bucket demobucket under folder structure /data/profile/image/,
+	 * 		so he/she will pass /data/profile/image/ as a subdirectory parameter 	
+	 * @param file : file to be upload 
+	 * @param bucketName : specify the name of the bucket where one need to store uploaded file
+	 * @param fileName : file name must be consist with
+	 * @param subDirectory : sub directory of parent bucket 
+	 * @throws WtCloudException 
+	 */
+	public void uploadFileInFolder(byte[] file, String bucketName, FileExtenion fileExtenion, String fileName, String subDirectory) throws WtCloudException {
+		if(file == null || fileExtenion == null || subDirectory == null )
+			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_MANDATORY_ARGUMENTS_NOT_FOUND);
+		fileName = (fileName == null) ? WtHelper.generateRandomString(7) : fileName;
+		fileName = fileName.concat("." + fileExtenion.getExtension());
 		clouldStorageCoreService.addFileToBucket(file, bucketName, subDirectory, fileName);
 	}
 
@@ -181,13 +200,13 @@ public class GoogleClouldStorageService {
 	 * getObjectMediaLinks : method can be used to fetch all the blobdto in a particular bucket
 	 * @param bucketName : name of bucket 
 	 * @return : List of BlobDTOs 
-	 * @throws WtStorageException : In case of blob not present in the bucket it throws GoogleException.
+	 * @throws WtCloudException : In case of blob not present in the bucket it throws GoogleException.
 	 */
-	public List<WtBlob> getObjectMediaLinks(String bucketName) throws WtStorageException {
+	public List<WtBlob> getObjectMediaLinks(String bucketName) throws WtCloudException {
 		bucketName = (bucketName == null ) ? this.bucketName : bucketName;
 		Page<com.google.cloud.storage.Blob> blobs = clouldStorageCoreService.getObjectsFromBucket(bucketName);
 		if(blobs == null) {
-			throw new WtStorageException(WtStorageExceptionCodes.NO_BUCKET_OBJECT_FOUND);
+			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_NO_BUCKET_FOUND);
 		}
 		List<WtBlob> list = new ArrayList<>();
 		for (com.google.cloud.storage.Blob blob : blobs.iterateAll()) {
@@ -200,9 +219,9 @@ public class GoogleClouldStorageService {
 	/** 
 	 * Method getFileFromBucket for fetching file object from the bucket 
 	 * @return {@link WtBlob} consisting of all required attributes
-	 * @throws WtStorageException : In case of blob not present in the bucket it throws GoogleException.
+	 * @throws WtCloudException : In case of blob not present in the bucket it throws GoogleException.
 	 */
-	public WtBlob getFileFromBucket(WtBlobId wtBlobId ) throws WtStorageException {
+	public WtBlob getFileFromBucket(WtBlobId wtBlobId ) throws WtCloudException {
 		com.google.cloud.storage.Blob blob = clouldStorageCoreService.getObjectFromBucket(wtBlobId.getBucket(), wtBlobId.getName(),
 				wtBlobId.getGeneration());
 		return DtoMapper.objectToDto(blob);
@@ -214,11 +233,11 @@ public class GoogleClouldStorageService {
 	 * @param blobName : name of the file
 	 * @param generation : generation which is generated for every blob while uploading in bucket
 	 * @return : BlobDTO [blobId-Blob id consist of bucketname/name/generation ,mediaLink-URL of the particular blob,content-Array of byte for file]
-	 * @throws WtStorageException : In case of blob not present in the bucket it throws GoogleException.
+	 * @throws WtCloudException : In case of blob not present in the bucket it throws GoogleException.
 	 */
-	public WtBlob getFileFromBucket(String bucketName, String blobName, long generation) throws WtStorageException {
-		if (bucketName == null || blobName == null)  {
-			throw new WtStorageException(WtStorageExceptionCodes.MANDATORY_ARGUMENTS_NOT_FOUND);
+	public WtBlob getFileFromBucket(String bucketName, String blobName, long generation) throws WtCloudException {
+		if (bucketName == null || blobName == null) {
+			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_MANDATORY_ARGUMENTS_NOT_FOUND);
 		}
 		com.google.cloud.storage.Blob blob = clouldStorageCoreService.getObjectFromBucket(bucketName, blobName,
 				generation);
@@ -231,13 +250,13 @@ public class GoogleClouldStorageService {
 	 * @param blobName : name of the file
 	 * @param generation : generation which is generated for every blob while uploading in bucket
 	 * @return : BlobDTO [blobId-Blob id consist of bucketname/name/generation ,mediaLink-URL of the particular blob,content-Array of byte for file]
-	 * @throws WtStorageException : exception while retrieving object from storage
+	 * @throws WtCloudException : exception while retrieving object from storage
 	 */
-	public WtBlob getFileFromBucket(String blobName, long generation) throws WtStorageException {
+	public WtBlob getFileFromBucket(String blobName, long generation) throws WtCloudException {
 		com.google.cloud.storage.Blob blob = clouldStorageCoreService.getObjectFromBucket(bucketName, blobName,
 				generation);
 		if(blob == null) {
-			throw new WtStorageException(WtStorageExceptionCodes.NO_BUCKET_OBJECT_FOUND);
+			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_NO_BUCKET_OBJECT_FOUND);
 		}
 		return DtoMapper.objectToDto(blob);
 	} 

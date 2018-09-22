@@ -7,30 +7,30 @@ package com.wolftechnica.google.exceptions;
  * 
  * @author Wolftechnica services
  */
-public class WtStorageException extends Exception {
+public class WtCloudException extends Exception {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7718828512143293558L;
 
-	private WtStorageExceptionCodes exceptionCodes;
+	private WtCloudExceptionCodes exceptionCodes;
 
-	public WtStorageException() {
+	public WtCloudException(String string) {
 		super();
 
 	}
 
-	public WtStorageException(WtStorageExceptionCodes exceptionCodes) {
+	public WtCloudException(WtCloudExceptionCodes exceptionCodes) {
 		super();
 		this.setExceptionCodes(exceptionCodes);
 	} 
 
-	public WtStorageExceptionCodes getExceptionCodes() {
+	public WtCloudExceptionCodes getExceptionCodes() {
 		return exceptionCodes;
 	}
 
-	public void setExceptionCodes(WtStorageExceptionCodes exceptionCodes) {
+	public void setExceptionCodes(WtCloudExceptionCodes exceptionCodes) {
 		this.exceptionCodes = exceptionCodes;
 	}
 
