@@ -26,7 +26,7 @@ public class WtHelper {
 	/**
 	 * create a random string value that can be used for various purpose.
 	 * @param length : is the length of the the string value you that you need to generate 
-	 * @return
+	 * @return random string
 	 */
 	public static String generateRandomString(int length){
 		Random random = new Random();

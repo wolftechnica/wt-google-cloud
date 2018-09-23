@@ -64,7 +64,7 @@ public class GCSCoreService {
 	 * @param apiKey : path of the API key generated from the google cloud storage
 	 * @param projectId : name of the project ID
 	 * @return Singleton instance of GCSCoreService
-	 * @throws IllegalAccessException if no key passed
+	 * @throws WtCloudException exception while initializing cloud services
 	 */
 	public static GCSCoreService getGCSCoreService(String apiKey, String projectId) throws WtCloudException {
 		if (clouldStorageCoreService == null) {

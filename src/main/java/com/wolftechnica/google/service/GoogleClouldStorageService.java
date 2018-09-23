@@ -60,7 +60,6 @@ public class GoogleClouldStorageService {
 	 * @param apiKey : path of the API key generated from the google cloud storage
 	 * @param projectId : name of the project ID
 	 * 
-	 * @throws IllegalAccessException : exception while retrieving object from storage
 	 * @throws WtCloudException  : exception while retrieving object from storage
 	 */
 	public GoogleClouldStorageService(String apiKey, String projectId, String bucketName) throws WtCloudException {
@@ -169,10 +168,9 @@ public class GoogleClouldStorageService {
 
 	/**
 	 * @param file : file to be upload 
-	 * @param bucketName : specify the name of the bucket where one need to store uploaded file
-	 * @param fileName : file name must be consist with
+	 * @param fileExtenion : enum to declare the file extension
 	 * @param subDirectory : sub directory of parent bucket 
-	 * @throws WtCloudException 
+	 * @throws WtCloudException : exception if unable to load file in cloud storage
 	 */
 	public void uploadFileInFolder(byte[] file, FileExtenion fileExtenion, String subDirectory) throws WtCloudException {
 		clouldStorageCoreService.addFileToBucket(file, bucketName, subDirectory, null);
@@ -184,9 +182,10 @@ public class GoogleClouldStorageService {
 	 * 		so he/she will pass /data/profile/image/ as a subdirectory parameter 	
 	 * @param file : file to be upload 
 	 * @param bucketName : specify the name of the bucket where one need to store uploaded file
+	 * @param fileExtenion : enum to declare the file extension
 	 * @param fileName : file name must be consist with
 	 * @param subDirectory : sub directory of parent bucket 
-	 * @throws WtCloudException 
+	 * @throws WtCloudException  : exception if unable to load file in cloud storage
 	 */
 	public void uploadFileInFolder(byte[] file, String bucketName, FileExtenion fileExtenion, String fileName, String subDirectory) throws WtCloudException {
 		if(file == null || fileExtenion == null || subDirectory == null )
@@ -218,6 +217,7 @@ public class GoogleClouldStorageService {
 
 	/** 
 	 * Method getFileFromBucket for fetching file object from the bucket 
+	 * @param wtBlobId of type {@link WtBlobId} : this should conatin the generation id, bucket name and file name
 	 * @return {@link WtBlob} consisting of all required attributes
 	 * @throws WtCloudException : In case of blob not present in the bucket it throws GoogleException.
 	 */
