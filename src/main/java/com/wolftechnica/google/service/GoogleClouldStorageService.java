@@ -170,10 +170,14 @@ public class GoogleClouldStorageService {
 	 * @param file : file to be upload 
 	 * @param fileExtenion : enum to declare the file extension
 	 * @param subDirectory : sub directory of parent bucket 
+	 * @return : generated info for uploaded file.
 	 * @throws WtCloudException : exception if unable to load file in cloud storage
 	 */
-	public void uploadFileInFolder(byte[] file, FileExtenion fileExtenion, String subDirectory) throws WtCloudException {
-		clouldStorageCoreService.addFileToBucket(file, bucketName, subDirectory, null);
+	public WtBlobId uploadFileInFolder(byte[] file, FileExtenion fileExtenion, String subDirectory) throws WtCloudException {
+		if (file == null || fileExtenion == null) {
+			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_MANDATORY_ARGUMENTS_NOT_FOUND);
+		}
+		return uploadFileInFolder(file, subDirectory, fileExtenion, null, subDirectory);
 	}
 	
 	/**
@@ -183,16 +187,24 @@ public class GoogleClouldStorageService {
 	 * @param file : file to be upload 
 	 * @param bucketName : specify the name of the bucket where one need to store uploaded file
 	 * @param fileExtenion : enum to declare the file extension
-	 * @param fileName : file name must be consist with
+	 * @param fileName : filename is optional 
 	 * @param subDirectory : sub directory of parent bucket 
+	 * @return : generated info for uploaded file.
 	 * @throws WtCloudException  : exception if unable to load file in cloud storage
 	 */
-	public void uploadFileInFolder(byte[] file, String bucketName, FileExtenion fileExtenion, String fileName, String subDirectory) throws WtCloudException {
+	public WtBlobId uploadFileInFolder(byte[] file, String bucketName, FileExtenion fileExtenion, String fileName, String subDirectory) throws WtCloudException {
 		if(file == null || fileExtenion == null || subDirectory == null )
 			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_MANDATORY_ARGUMENTS_NOT_FOUND);
 		fileName = (fileName == null) ? WtHelper.generateRandomString(7) : fileName;
 		fileName = fileName.concat("." + fileExtenion.getExtension());
-		clouldStorageCoreService.addFileToBucket(file, bucketName, subDirectory, fileName);
+		WtBlobId wtBlobId = new WtBlobId();
+		BlobInfo blobInfo = clouldStorageCoreService.addFileToBucket(file, bucketName, subDirectory, fileName);
+		if (blobInfo != null) {
+			wtBlobId.setName(blobInfo.getName());
+			wtBlobId.setGeneration(blobInfo.getGeneration());
+			wtBlobId.setBucket(blobInfo.getBucket());
+		}
+		return wtBlobId;
 	}
 
 	/**

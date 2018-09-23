@@ -150,13 +150,14 @@ public class GCSCoreService {
 	 * @param subDirectory : sub directory of parent bucket
 	 * @param fileName : name of the file with extension i.e. demo.jpeg
 	 */
-	public void addFileToBucket(byte[] content, String bucketName, String subDirectory, String fileName) {
+	public BlobInfo addFileToBucket(byte[] content, String bucketName, String subDirectory, String fileName) {
 		final String file = System.currentTimeMillis() + "-" + fileName;
 		BlobInfo blobInfo = storage.create(BlobInfo.newBuilder(bucketName, subDirectory + file)
 				.setAcl(new ArrayList<>(
 						Arrays.asList(Acl.of(User.ofAllUsers(), com.google.cloud.storage.Acl.Role.READER))))
 				.build(), content);
 		LOG.log(Level.INFO, " blobInfo : ", blobInfo);
+		return blobInfo;
 	}
 
 	/**
