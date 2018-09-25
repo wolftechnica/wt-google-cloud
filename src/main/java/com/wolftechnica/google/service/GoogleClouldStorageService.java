@@ -170,15 +170,15 @@ public class GoogleClouldStorageService {
 	/**
 	 * @param file : file to be upload 
 	 * @param fileExtenion : enum to declare the file extension
-	 * @param subDirectory : sub directory of parent bucket 
+	 * @param subDirectoryPath : path of the subdirectory where file need to be stored 
 	 * @return : generated info for uploaded file.
 	 * @throws WtCloudException : exception if unable to load file in cloud storage
 	 */
-	public WtBlobId uploadFileInFolder(byte[] file, FileExtenion fileExtenion, String subDirectory) throws WtCloudException {
+	public WtBlobId uploadFileInFolder(byte[] file, FileExtenion fileExtenion, String subDirectoryPath) throws WtCloudException {
 		if (file == null || fileExtenion == null) {
 			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_MANDATORY_ARGUMENTS_NOT_FOUND);
 		}
-		return uploadFileInFolder(file, bucketName, fileExtenion, null, subDirectory);
+		return uploadFileInFolder(file, bucketName, fileExtenion, null, subDirectoryPath);
 	}
 	
 	/**

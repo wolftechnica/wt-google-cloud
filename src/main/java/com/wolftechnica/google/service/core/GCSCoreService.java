@@ -147,12 +147,12 @@ public class GCSCoreService {
 	/**
 	 * @param content : array of bytes is that needs to be saved in the bucket
 	 * @param bucketName : name of the bucket where we need to add file
-	 * @param subDirectory : sub directory of parent bucket
+	 * @param subDirectoryPath : sub-directory path of parent bucket
 	 * @param fileName : name of the file with extension i.e. demo.jpeg
 	 */
-	public BlobInfo addFileToBucket(byte[] content, String bucketName, String subDirectory, String fileName) {
+	public BlobInfo addFileToBucket(byte[] content, String bucketName, String subDirectoryPath, String fileName) {
 		final String file = System.currentTimeMillis() + "-" + fileName;
-		BlobInfo blobInfo = storage.create(BlobInfo.newBuilder(bucketName, subDirectory + file)
+		BlobInfo blobInfo = storage.create(BlobInfo.newBuilder(bucketName, subDirectoryPath + file)
 				.setAcl(new ArrayList<>(
 						Arrays.asList(Acl.of(User.ofAllUsers(), com.google.cloud.storage.Acl.Role.READER))))
 				.build(), content);
