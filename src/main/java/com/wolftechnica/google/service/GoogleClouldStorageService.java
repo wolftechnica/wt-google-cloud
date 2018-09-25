@@ -37,7 +37,8 @@ public class GoogleClouldStorageService {
 	 * com.wolftechnica.google.api.project.bucketname in property file
 	 * wf-google.properties
 	 */
-	private String bucketName = PropertyFileHelper.getProperty(GoogleConstant.CONFIG_GC_PROJECT_BUCKET_NAME);
+	//Dont initialize this here. read properties in constructor or init method
+	private String bucketName;// = PropertyFileHelper.getProperty(GoogleConstant.CONFIG_GC_PROJECT_BUCKET_NAME);
 	
 	
 	/**
@@ -177,7 +178,7 @@ public class GoogleClouldStorageService {
 		if (file == null || fileExtenion == null) {
 			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_MANDATORY_ARGUMENTS_NOT_FOUND);
 		}
-		return uploadFileInFolder(file, subDirectory, fileExtenion, null, subDirectory);
+		return uploadFileInFolder(file, bucketName, fileExtenion, null, subDirectory);
 	}
 	
 	/**
