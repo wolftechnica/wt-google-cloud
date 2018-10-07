@@ -1,13 +1,15 @@
 package com.wolftechnica.google.helpers;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.wolftechnica.google.exceptions.WtCloudException;
+import com.wolftechnica.google.exceptions.WtCloudExceptionCodes;
 import com.wolftechnica.google.service.core.GCSCoreService;
 
 /**
@@ -40,12 +42,23 @@ public class WtHelper {
         return randomString;
     }
 
+	/**
+	 * 
+	 * @param file
+	 * @return
+	 * @throws WtCloudException
+	 */
 	public static byte[] fileToByteArray(File file) throws WtCloudException {
-		try {
-			return Files.readAllBytes(file.toPath());
+		byte[] bytesArray = new byte[(int) file.length()];
+		try (FileInputStream fis = new FileInputStream(file)) {
+			fis.read(bytesArray);
+		} catch (FileNotFoundException e) {
+			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_SINGLETON_FILE_NOT_EXCEPTION);
 		} catch (IOException e) {
-			throw new WtCloudException(e.getMessage());
+			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_SINGLETON_IO_EXCEPTION);
 		}
+		return bytesArray;
+
 	}
 	
 }

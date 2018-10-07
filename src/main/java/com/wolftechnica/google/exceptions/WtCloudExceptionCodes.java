@@ -11,7 +11,9 @@ public enum WtCloudExceptionCodes {
 	STORAGE_NO_BUCKET_FOUND(70002, "No bucket found with given name."),
 	STORAGE_NO_BUCKET_OBJECT_FOUND(70003, "No bucket object found with given name."),
 	STORAGE_MANDATORY_ARGUMENTS_NOT_FOUND(70004, "Mandatory argument not provided to the method."),
-	STORAGE_SINGLETON_CLASS_ACCESS_EXCEPTION(70005, "Singleton class can instantiated once only.")
+	STORAGE_SINGLETON_CLASS_ACCESS_EXCEPTION(70005, "Singleton class can instantiated once only."),
+	STORAGE_SINGLETON_FILE_NOT_EXCEPTION(70006, "File not found."),
+	STORAGE_SINGLETON_IO_EXCEPTION(70007, "IO exception occured.")
 
 	;
 
