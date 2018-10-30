@@ -1,6 +1,7 @@
 package com.wolftechnica.google.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -196,14 +197,29 @@ public class GoogleClouldStorageService {
 	public WtBlobId uploadFileInFolder(byte[] file, String bucketName, FileExtenion fileExtenion, String fileName, String subDirectory) throws WtCloudException {
 		if(file == null || fileExtenion == null || subDirectory == null )
 			throw new WtCloudException(WtCloudExceptionCodes.STORAGE_MANDATORY_ARGUMENTS_NOT_FOUND);
-		fileName = (fileName == null) ? WtHelper.generateRandomString(7) : fileName;
-		fileName = fileName.concat("." + fileExtenion.getExtension());
+		fileName = (fileName == null) ? WtHelper.generateRandomString(17) : fileName;
+		String fileNameOrigninal = fileName.concat("." + fileExtenion.getExtension());
 		WtBlobId wtBlobId = new WtBlobId();
-		BlobInfo blobInfo = clouldStorageCoreService.addFileToBucket(file, bucketName, subDirectory, fileName);
+		BlobInfo blobInfo = clouldStorageCoreService.addFileToBucket(file, fileExtenion.getContentType(),bucketName, subDirectory, fileNameOrigninal);
+		if (Arrays.asList(FileExtenion.IMG_JPEG, FileExtenion.IMG_JPG, FileExtenion.IMG_PNG).contains(fileExtenion)) {
+			try {
+				String fileNameTumbnailed = fileName.concat("-thumbnailed-75x75." + fileExtenion.getExtension());
+				LOG.log(Level.INFO, "Processing for resizing for fileExtenion : {0}", fileExtenion);
+				BlobInfo resizedFileblobInfo = clouldStorageCoreService.addFileToBucket(
+						WtHelper.resizeImage(file, 75, 75, fileExtenion.getExtension()), fileExtenion.getContentType(),
+						bucketName, subDirectory, fileNameTumbnailed);
+				wtBlobId.setMediaLinkThumbailed(resizedFileblobInfo.getMediaLink());
+				LOG.log(Level.INFO, "thumbnailed has been generated  : {0}", resizedFileblobInfo.getBlobId());
+			} catch (Exception e) {
+				LOG.log(Level.SEVERE, e.getMessage(), e);
+				throw new WtCloudException(WtCloudExceptionCodes.STORAGE_UNABLE_TO_SAVE_THUMBNAILED);
+			}
+		}
 		if (blobInfo != null) {
 			wtBlobId.setName(blobInfo.getName());
 			wtBlobId.setGeneration(blobInfo.getGeneration());
 			wtBlobId.setBucket(blobInfo.getBucket());
+			wtBlobId.setMediaLink(blobInfo.getMediaLink());
 		}
 		return wtBlobId;
 	}

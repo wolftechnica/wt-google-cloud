@@ -14,6 +14,10 @@ public class WtBlobId {
 	
 	private long generation;
 
+	private String mediaLink;
+	
+	private String mediaLinkThumbailed;
+	
 	public String getBucket() {
 		return bucket;
 	}
@@ -37,11 +41,29 @@ public class WtBlobId {
 	public void setGeneration(long generation) {
 		this.generation = generation;
 	}
+	
+	public String getMediaLink() {
+		return mediaLink;
+	}
+
+	public void setMediaLink(String mediaLink) {
+		this.mediaLink = mediaLink;
+	}
+
+	public String getMediaLinkThumbailed() {
+		return mediaLinkThumbailed;
+	}
+
+	public void setMediaLinkThumbailed(String mediaLinkThumbailed) {
+		this.mediaLinkThumbailed = mediaLinkThumbailed;
+	}
 
 	@Override
 	public String toString() {
-		return "BlobIdDto [bucket=" + bucket + ", name=" + name + ", generation=" + generation + "]";
+		return "WtBlobId [bucket=" + bucket + ", name=" + name + ", generation=" + generation + ", mediaLink="
+				+ mediaLink + ", mediaLinkThumbailed=" + mediaLinkThumbailed + "]";
 	}
+
 	
 	
 	

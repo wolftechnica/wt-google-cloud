@@ -15,6 +15,7 @@ import com.google.cloud.storage.Acl.User;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.Bucket.BlobTargetOption;
 import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage.BlobGetOption;
 import com.google.cloud.storage.StorageOptions;
@@ -196,5 +197,16 @@ public class GCSCoreService {
 		if (blob != null)
 			LOG.log(Level.INFO, " blob : ", blob.getGeneratedId());
 		return blob;
+	}
+
+	public BlobInfo addFileToBucket(byte[] content, String contentType, String bucketName, String subDirectoryPath,
+			String fileName) {
+		//final String file = System.currentTimeMillis() + "-" + fileName;
+		BlobInfo blobInfo = storage.create(BlobInfo.newBuilder(bucketName, subDirectoryPath + fileName).setContentType(contentType)
+				.setAcl(new ArrayList<>(
+						Arrays.asList(Acl.of(User.ofAllUsers(), com.google.cloud.storage.Acl.Role.READER))))
+				.build(), content);
+		LOG.log(Level.INFO, " blobInfo : ", blobInfo);
+		return blobInfo;
 	}
 }
