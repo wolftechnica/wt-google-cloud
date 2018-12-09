@@ -11,7 +11,7 @@ public enum FileExtenion {
 	IMG_JPEG("jpeg","image/jpeg"), IMG_PNG("png","image/png"), IMG_JPG("jpg","image/jpg"), IMG_GIF("gif","image/gif"), 
 	AUDIO_MP3("mp3","audio/mp3"), AUDIO_WMA("wma","audio/wma"), AUDIO_WAV("wav","audio/wav"), 
 	VIDEO_MKV("mkv","video/mkv"), VIDEO_FLV("flv","video/mkv"), VIDEO_AVI("avi","video/msvideo"), VIDEO_VOB("vob","video/vob")
-	, VIDEO_MP4("mp4","video/mp4");
+	, VIDEO_MP4("mp4","video/mp4") , FILE_ZIP("zip","application/zip");
 
 	/**
 	 * @param extension

@@ -141,7 +141,7 @@ public class GCSCoreService {
 				.setAcl(new ArrayList<>(
 						Arrays.asList(Acl.of(User.ofAllUsers(), com.google.cloud.storage.Acl.Role.READER))))
 				.build(), content);
-		LOG.log(Level.INFO, " blobInfo : ", blobInfo);
+		LOG.log(Level.INFO, " blobInfo : {}", blobInfo);
 		return blobInfo;
 	}
 
