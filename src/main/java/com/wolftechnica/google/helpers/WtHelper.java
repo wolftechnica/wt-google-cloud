@@ -1,6 +1,5 @@
 package com.wolftechnica.google.helpers;
 
-import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
