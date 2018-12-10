@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.wolftechnica.cloud</groupId>
 	<artifactId>wt-google-cloud</artifactId>
-	<version>0.9</version>
+	<version>1.0</version>
 	<packaging>jar</packaging>
 	<name>wt-google-cloud</name>
 	<description>wt-google-cloud : utility api for google cloud storage and other services. </description>
